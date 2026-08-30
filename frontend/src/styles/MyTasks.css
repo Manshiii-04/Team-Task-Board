@@ -1,0 +1,132 @@
+.my-tasks-page {
+  min-height: calc(100vh - 64px);
+  padding: 30px;
+  background: #f8fafc;
+}
+
+.my-tasks-header {
+  max-width: 1200px;
+  margin: 0 auto 24px;
+}
+
+.my-tasks-header h1 {
+  margin: 0;
+  color: #111827;
+  font-size: 28px;
+  font-weight: 700;
+}
+
+.my-tasks-header p {
+  margin: 6px 0 0;
+  color: #6b7280;
+  font-size: 14px;
+}
+
+.task-filters {
+  max-width: 1200px;
+  margin: 0 auto 20px;
+  display: flex;
+  gap: 8px;
+}
+
+.task-filters button {
+  padding: 9px 16px;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  background: #fff;
+  color: #4b5563;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.task-filters button:hover {
+  background: #f3f4f6;
+}
+
+.task-filters button.active {
+  border-color: #4f46e5;
+  background: #4f46e5;
+  color: #fff;
+}
+
+.my-tasks-content {
+  max-width: 1200px;
+  min-height: 420px;
+  margin: 0 auto;
+  padding: 30px;
+  background: #f1f5f9;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+}
+
+.my-tasks-empty {
+  min-height: 360px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+
+.empty-icon {
+  width: 56px;
+  height: 56px;
+  margin-bottom: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: #eef2ff;
+  color: #4f46e5;
+  font-size: 24px;
+  font-weight: 700;
+}
+
+.my-tasks-empty h2 {
+  margin: 0;
+  color: #374151;
+  font-size: 18px;
+  font-weight: 600;
+}
+
+.my-tasks-empty p {
+  margin: 8px 0 0;
+  color: #9ca3af;
+  font-size: 14px;
+}
+
+.my-tasks-list {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 18px;
+}
+
+@media (max-width: 800px) {
+  .my-tasks-list {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 600px) {
+  .my-tasks-page {
+    padding: 20px 15px;
+  }
+
+  .task-filters {
+    overflow-x: auto;
+  }
+
+  .task-filters button {
+    white-space: nowrap;
+  }
+
+  .my-tasks-content {
+    padding: 20px;
+  }
+
+  .my-tasks-empty {
+    min-height: 300px;
+  }
+}
