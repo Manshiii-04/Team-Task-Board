@@ -1,23 +1,27 @@
 const express = require("express");
+const { protect, authorize } = require("../middleware/authMiddleware");
 
 const router = express.Router();
 
 const {
+  getTasks,
   createTask,
   updateTask,
   updateTaskStatus,
-  assignTask,
+  // assignTask,
   deleteTask
 } = require("../Controllers/taskController");
 
-router.post("/", createTask);
+router.get("/", protect, getTasks);
 
-router.put("/:id", updateTask);
+router.post("/", protect, authorize('admin'), createTask);
 
-router.patch("/:id/status", updateTaskStatus);
+router.put("/:id", protect, authorize('admin'), updateTask);
 
-router.patch("/:id/assign", assignTask);
+router.patch("/:id/status", protect, authorize('member'), updateTaskStatus);
 
-router.delete("/:id", deleteTask);
+// router.patch("/:id/assign", protect, authorize('admin'),  assignTask);
+
+router.delete("/:id", protect, authorize('admin'),  deleteTask);
 
 module.exports = router;

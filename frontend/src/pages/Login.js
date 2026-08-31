@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import "../styles/Auth.css";
 
-const API_BASE = process.env.REACT_APP_API_URL || "http://localhost:5000";
+const API_BASE = process.env.REACT_APP_API_URL || "http://localhost:5100";
 
 function Login({ setPage, onAuthSuccess }) {
   const [formData, setFormData] = useState({ email: "", password: "" });
