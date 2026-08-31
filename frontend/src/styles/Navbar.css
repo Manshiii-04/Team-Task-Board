@@ -119,3 +119,24 @@
   }
 }
 
+.auth-buttons {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.nav-link-primary {
+  background: #4f46e5;
+  color: #fff;
+  border-radius: 6px;
+  padding: 8px 16px;
+}
+
+.nav-link-primary:hover {
+  background: #4338ca;
+}
+
+.logout-btn {
+  margin-left: 12px;
+  color: #b91c1c;
+}
