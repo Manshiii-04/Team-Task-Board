@@ -1,0 +1,130 @@
+.board-page {
+  min-height: calc(100vh - 64px);
+  padding: 30px;
+  background: #f8fafc;
+}
+
+.board-header {
+  max-width: 1400px;
+  margin: 0 auto 28px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.board-header h1 {
+  margin: 0;
+  color: #111827;
+  font-size: 28px;
+  font-weight: 700;
+}
+
+.board-header p {
+  margin: 6px 0 0;
+  color: #6b7280;
+  font-size: 14px;
+}
+
+.add-task-button {
+  padding: 11px 18px;
+  border: none;
+  border-radius: 8px;
+  background: #4f46e5;
+  color: #fff;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.add-task-button:hover {
+  background: #4338ca;
+  transform: translateY(-1px);
+}
+
+.board-columns {
+  max-width: 1400px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+  align-items: start;
+}
+
+.board-column {
+  min-height: 500px;
+  padding: 18px;
+  background: #f1f5f9;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+}
+
+.column-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 18px;
+}
+
+.column-header h2 {
+  margin: 0;
+  color: #1f2937;
+  font-size: 16px;
+  font-weight: 700;
+}
+
+.column-header span {
+  min-width: 26px;
+  height: 26px;
+  padding: 0 7px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: #e2e8f0;
+  color: #475569;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.tasks-container {
+  min-height: 420px;
+}
+
+.empty-message {
+  margin: 0;
+  padding: 35px 10px;
+  text-align: center;
+  color: #94a3b8;
+  font-size: 13px;
+}
+
+@media (max-width: 900px) {
+  .board-columns {
+    grid-template-columns: 1fr;
+  }
+
+  .board-column {
+    min-height: 300px;
+  }
+
+  .tasks-container {
+    min-height: 200px;
+  }
+}
+
+@media (max-width: 600px) {
+  .board-page {
+    padding: 20px 15px;
+  }
+
+  .board-header {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 18px;
+  }
+
+  .add-task-button {
+    width: 100%;
+  }
+}
