@@ -4,34 +4,30 @@ const taskSchema = new mongoose.Schema(
   {
     title: {
       type: String,
-      required: true
+      required: true,
     },
-
     description: {
       type: String,
-      default: ""
+      default: "",
     },
-
     status: {
       type: String,
       enum: ["Todo", "In Progress", "Done"],
-      default: "Todo"
+      default: "Todo",
     },
-
     assignee: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
-      default: null
+      default: null,
     },
-
-    boardId: {
+    createdBy: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "Board",
-      required: true
-    }
+      ref: "User",
+      required: true,
+    },
   },
   {
-    timestamps: true
+    timestamps: true,
   }
 );
 

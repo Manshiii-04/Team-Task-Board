@@ -1,169 +1,120 @@
 const Task = require("../models/Task");
 
-// CREATE TASK
-const createTask = async (req, res) => {
+// GET /api/tasks
+async function getTasks(req, res) {
   try {
-    const task = await Task.create(req.body);
-
-    res.status(201).json({
-      success: true,
-      message: "Task created successfully",
-      task
-    });
-
+    const query = req.user.role === "admin" ? {} : { assignee: req.user.id };
+    const tasks = await Task.find(query)
+      .populate("assignee", "name email")
+      .populate("createdBy", "name email");
+    return res.status(200).json(tasks);
   } catch (error) {
-    res.status(500).json({
-      success: false,
-      message: error.message
-    });
+    console.error("Get tasks error:", error);
+    return res.status(500).json({ message: "Server error fetching tasks" });
   }
-};
+}
 
-
-// UPDATE TASK
-const updateTask = async (req, res) => {
+// POST /api/tasks (admin only)
+async function createTask(req, res) {
   try {
-    const task = await Task.findByIdAndUpdate(
-      req.params.id,
-      req.body,
-      {
-        new: true,
-        runValidators: true
-      }
-    );
-
-    if (!task) {
-      return res.status(404).json({
-        success: false,
-        message: "Task not found"
-      });
+    const { title, description, status, assignee } = req.body;
+    if (!title && !description && !status && !assignee) {
+      return res.status(400).json({ message: "All data required" });
     }
 
-    res.status(200).json({
-      success: true,
-      message: "Task updated successfully",
-      task
+    const task = await Task.create({
+      title,
+      description,
+      status,
+      assignee: assignee || null,
+      createdBy: req.user.id,
     });
 
+    const populated = await task.populate([
+      { path: "assignee", select: "name email" },
+      { path: "createdBy", select: "name email" },
+    ]);
+
+    return res.status(201).json(populated);
   } catch (error) {
-    res.status(500).json({
-      success: false,
-      message: error.message
-    });
+    console.error("Create task error:", error);
+    return res.status(500).json({ message: "Server error creating task" });
   }
-};
-// UPDATE TASK STATUS
-const updateTaskStatus = async (req, res) => {
+}
+
+// PUT /api/tasks/:id (admin only)
+async function updateTask(req, res) {
   try {
-    console.log("PATCH STATUS HIT");
-    console.log("Task ID:", req.params.id);
-    console.log("Body:", req.body);
+    const { title, description, status, assignee } = req.body;
 
     const task = await Task.findById(req.params.id);
-
-    console.log("Task found:", task);
-
     if (!task) {
-      return res.status(404).json({
-        success: false,
-        message: "Task not found"
-      });
+      return res.status(404).json({ message: "Task not found" });
     }
 
-    task.status = req.body.status;
+    task.title = title ?? task.title;
+    task.description = description ?? task.description;
+    task.status = status ?? task.status;
+    task.assignee = assignee ?? task.assignee;
 
     await task.save();
+    const populated = await task.populate([
+      { path: "assignee", select: "name email" },
+      { path: "createdBy", select: "name email" },
+    ]);
 
-    return res.status(200).json({
-      success: true,
-      message: "Task status updated successfully",
-      task: task
-    });
-
+    return res.status(200).json(populated);
   } catch (error) {
-    console.log("PATCH ERROR:", error);
-
-    return res.status(500).json({
-      success: false,
-      message: error.message
-    });
+    console.error("Update task error:", error);
+    return res.status(500).json({ message: "Server error updating task" });
   }
-};
+}
 
-// DELETE TASK
-const deleteTask = async (req, res) => {
+// PATCH /api/tasks/:id/status (member: own task only; admin: any)
+async function updateTaskStatus(req, res) {
+  try {
+    const { status } = req.body;
+    const validStatuses = ["Todo", "In Progress", "Done"];
+    if (!validStatuses.includes(status)) {
+      return res.status(400).json({ message: "Invalid status value" });
+    }
+
+    const task = await Task.findById(req.params.id);
+    if (!task) {
+      return res.status(404).json({ message: "Task not found" });
+    }
+
+    const isOwner = task.assignee && task.assignee.toString() === req.user.id;
+    if (req.user.role !== "admin" && !isOwner) {
+      return res.status(403).json({ message: "You do not have permission to update this task" });
+    }
+
+    task.status = status;
+    await task.save();
+    const populated = await task.populate([
+      { path: "assignee", select: "name email" },
+      { path: "createdBy", select: "name email" },
+    ]);
+
+    return res.status(200).json(populated);
+  } catch (error) {
+    console.error("Update status error:", error);
+    return res.status(500).json({ message: "Server error updating task status" });
+  }
+}
+
+// DELETE /api/tasks/:id (admin only)
+async function deleteTask(req, res) {
   try {
     const task = await Task.findByIdAndDelete(req.params.id);
-
     if (!task) {
-      return res.status(404).json({
-        success: false,
-        message: "Task not found"
-      });
+      return res.status(404).json({ message: "Task not found" });
     }
-
-    res.status(200).json({
-      success: true,
-      message: "Task deleted successfully"
-    });
-
+    return res.status(200).json({ message: "Task deleted successfully" });
   } catch (error) {
-    res.status(500).json({
-      success: false,
-      message: error.message
-    });
+    console.error("Delete task error:", error);
+    return res.status(500).json({ message: "Server error deleting task" });
   }
-};
+}
 
-// ASSIGN TASK
-const assignTask = async (req, res) => {
-  try {
-    const { assignee } = req.body;
-
-    if (!assignee) {
-      return res.status(400).json({
-        success: false,
-        message: "Assignee is required"
-      });
-    }
-
-    const task = await Task.findByIdAndUpdate(
-      req.params.id,
-      { assignee: assignee },
-      {
-        new: true,
-        runValidators: true
-      }
-    ).populate("assignee", "name email");
-
-    if (!task) {
-      return res.status(404).json({
-        success: false,
-        message: "Task not found"
-      });
-    }
-
-    res.status(200).json({
-      success: true,
-      message: "Task assigned successfully",
-      task
-    });
-
-  } catch (error) {
-    console.log("ASSIGN ERROR:", error);
-
-    res.status(500).json({
-      success: false,
-      message: error.message
-    });
-  }
-};
-
-
-module.exports = {
-  createTask,
-  updateTask,
-  updateTaskStatus,
-  assignTask,
-  deleteTask
-};
+module.exports = { getTasks, createTask, updateTask, updateTaskStatus, deleteTask };

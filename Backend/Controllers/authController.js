@@ -2,6 +2,28 @@ const bcrypt = require('bcryptjs');
 const User = require('../models/User');
 const generateToken = require('../utils/generateToken');
 
+// GET /api/users/search?q=name
+async function searchUsers(req, res) {
+  try {
+    const { q } = req.query;
+    if (!q || q.trim().length === 0) {
+      return res.status(200).json([]);
+    }
+
+    const users = await User.find({
+      name: { $regex: q, $options: "i" }, // case-insensitive partial match
+      role: "member", // only show members as assignable — remove this line if admins can also be assigned
+    })
+      .select("_id name email")
+      .limit(10);
+
+    return res.status(200).json(users);
+  } catch (error) {
+    console.error("Search users error:", error);
+    return res.status(500).json({ message: "Server error searching users" });
+  }
+}
+
 // POST /api/auth/signup
 async function signup(req, res) {
   try {
@@ -84,4 +106,4 @@ async function login(req, res) {
   }
 }
 
-module.exports = { signup, login };
+module.exports = { signup, login, searchUsers };
